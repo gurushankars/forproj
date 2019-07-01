@@ -1,0 +1,142 @@
+CREATE TABLE `carpool`.`role` (
+  
+COMMENT = 'holds role of the employee either Provider or Rider ',
+`RoleId` TINYINT(1) NOT NULL,
+  
+`RoleName` VARCHAR(45) NOT NULL,
+ 
+ PRIMARY KEY (`RoleId`));
+
+
+CREATE TABLE `carpool`.`employee` (
+ 
+ `EmployeeId` INT(20) NOT NULL,
+ 
+ `EmpName` VARCHAR(45) NOT NULL,
+ 
+ `EmpAddress` VARCHAR(60) NOT NULL,
+  
+`EmpEmail` VARCHAR(45) NOT NULL,
+  
+`EmpPhoneNo` INT(10) NOT NULL,
+  
+`RoleId` TINYINT(1) NOT NULL,
+
+ PRIMARY KEY (`EmployeeId`),
+ 
+ INDEX `RoleId_idx` (`RoleId` ASC),
+
+ CONSTRAINT `RoleId`
+    FOREIGN KEY (`RoleId`)
+    REFERENCES `carpool`.`role` (`RoleId`)
+   
+ON DELETE RESTRICT
+
+ON UPDATE CASCADE)
+
+COMMENT = 'holds Employee\'s basic data';
+
+CREATE TABLE `carpool`.`vehicle` (
+ 
+`VehicleNo` VARCHAR(30) NOT NULL,
+
+`No_Of_Seats` INT(10) NOT NULL,
+`EmployeeId` INT(20) NOT NULL,
+PRIMARY KEY (`VehicleNo`),
+
+INDEX `EmployeeId_idx` (`EmployeeId` ASC),
+CONSTRAINT `EmployeeId`
+    FOREIGN KEY (`EmployeeId`)
+    REFERENCES `carpool`.`employee` (`EmployeeId`)
+
+ON DELETE RESTRICT
+
+ON UPDATE CASCADE)
+
+COMMENT = 'holds Provider\'s vehicle data';
+
+
+CREATE TABLE `carpool`.`route` (
+
+`RouteId` INT(30) NOT NULL,
+
+`Source` VARCHAR(45) NOT NULL,
+
+`Destination` VARCHAR(45) NOT NULL,
+
+PRIMARY KEY (`RouteId`))
+
+COMMENT = 'holds available routes data';
+
+CREATE TABLE `carpool`.`schedule` (
+  `ScheduleId` INT(10) NOT NULL,
+  `StartTime` DATETIME NOT NULL,
+  `EndTime` DATETIME NOT NULL,
+  `VehilcleNo` VARCHAR(30) NOT NULL,
+  `RouteId` INT(30) NOT NULL,
+  PRIMARY KEY (`ScheduleId`),
+  UNIQUE INDEX `StartTime_UNIQUE` (`StartTime` ASC),
+  UNIQUE INDEX `EndTime_UNIQUE` (`EndTime` ASC),
+  UNIQUE INDEX `VehilcleNo_UNIQUE` (`VehilcleNo` ASC),
+  UNIQUE INDEX `RouteId_UNIQUE` (`RouteId` ASC),
+  CONSTRAINT `VehicleId_Fk`
+    FOREIGN KEY (`VehilcleNo`)
+    REFERENCES `carpool`.`vehicle` (`VehicleNo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `RouteId_Fk`
+    FOREIGN KEY (`RouteId`)
+    REFERENCES `carpool`.`route` (`RouteId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+COMMENT = 'holds list of available schedules in the current pool';
+
+
+
+CREATE TABLE `carpool`.`trip` (
+  `TripId` INT(10) NOT NULL,
+  `EmployeeId(p)` INT(20) NOT NULL,
+  `ScheduleId` INT(10) NOT NULL,
+  `RouteId` INT(30) NOT NULL,
+  PRIMARY KEY (`TripId`),
+  INDEX `EmployeeId(P)_Fk_idx` (`EmployeeId(p)` ASC),
+  INDEX `ScheduleId_Fk_idx` (`ScheduleId` ASC),
+  INDEX `RoutId_fk_idx` (`RouteId` ASC),
+  CONSTRAINT `EmployeeId(P)_Fk`
+    FOREIGN KEY (`EmployeeId(p)`)
+    REFERENCES `carpool`.`employee` (`EmployeeId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `ScheduleId_Fk`
+    FOREIGN KEY (`ScheduleId`)
+    REFERENCES `carpool`.`schedule` (`ScheduleId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `RoutId_fk`
+    FOREIGN KEY (`RouteId`)
+    REFERENCES `carpool`.`route` (`RouteId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE);
+
+
+
+
+
+CREATE TABLE `carpool`.`riders` (
+  `RiderId_Fk` INT(20) NOT NULL,
+  `TripId_Fk` INT(10) NOT NULL,
+  UNIQUE INDEX `TripId_Fk_UNIQUE` (`TripId_Fk` ASC),
+  UNIQUE INDEX `RiderId_Fk_UNIQUE` (`RiderId_Fk` ASC),
+  CONSTRAINT `RiderId_Fk`
+    FOREIGN KEY (`RiderId_Fk`)
+    REFERENCES `carpool`.`employee` (`EmployeeId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `TripId_Fk`
+    FOREIGN KEY (`TripId_Fk`)
+    REFERENCES `carpool`.`trip` (`TripId`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE);
+
+
+
