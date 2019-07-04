@@ -115,6 +115,7 @@ CREATE TABLE `carpool`.`trip` (
   CONSTRAINT `RoutId_fk`
     FOREIGN KEY (`RouteId`)
     REFERENCES `carpool`.`route` (`RouteId`)
+    
     ON DELETE RESTRICT
     ON UPDATE CASCADE);
 
@@ -137,6 +138,46 @@ CREATE TABLE `carpool`.`riders` (
     REFERENCES `carpool`.`trip` (`TripId`)
     ON DELETE RESTRICT
     ON UPDATE CASCADE);
+
+
+
+
+
+
+
+
+
+show create table employee;
+
+
+alter table employee drop foreign key RoleId_Fk;
+
+
+alter table employee drop column RoleId;
+
+
+
+alter table employee
+add column roleId tinyint(1);
+
+
+
+alter table employee
+add constraint RoleId_Fk
+foregin key(roleId)
+references role(RoleId)
+on delete cascade;
+
+//login verify
+DELIMITER //
+DROP PROCEDURE IF EXISTS loginCheck //
+CREATE PROCEDURE loginCheck (
+in username int(20),in pass varchar(20))
+BEGIN
+select employeeId from employee
+where (employeeId = username AND password=pass);
+END //
+DELIMITER ;
 
 
 
